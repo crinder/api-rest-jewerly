@@ -1,0 +1,23 @@
+{
+  "name": "api-rest-jewerly",
+  "version": "1.0.0",
+  "description": "Api rest para juego de bisuteria",
+  "license": "ISC",
+  "author": "CrissDev9",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "nodemon index.js",
+    "start": "nodemon index.js"
+  },
+  "dependencies": {
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "mongoose": "^9.1.4"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.11"
+  }
+}
