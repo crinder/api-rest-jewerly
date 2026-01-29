@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+const {Schema, model} = require('mongoose');
 
 const AdminSchema = new Schema({
     email: {
@@ -22,4 +22,5 @@ const AdminSchema = new Schema({
 }, { timestamps: true });
 
 
-export const Admin = mongoose.model("Admin", AdminSchema);
+module.exports = model("Admin", AdminSchema);
+

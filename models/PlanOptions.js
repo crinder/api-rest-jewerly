@@ -1,6 +1,4 @@
-import mongoose from "mongoose";
-
-const { Schema } = mongoose;
+const { Schema, model } = require('mongoose');
 
 const PlanOptionSchema = new Schema({
     price: {
@@ -46,9 +44,16 @@ const PlanSchema = new Schema(
         metadata: {
             color: String,
             badge: String
-        }
+        },
+        availableItems: [
+            {
+                item: { type: Schema.Types.ObjectId, ref: "Item" },
+                chance: { type: Number, default: 10 },
+                isGrandPrize: { type: Boolean, default: false }
+            }
+        ]
     },
     { timestamps: true }
 );
 
-export default mongoose.model("Plan", PlanSchema);
+module.exports = model("Plan", PlanSchema);

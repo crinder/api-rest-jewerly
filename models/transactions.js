@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+const {Schema, model} = require('mongoose');
 
 const TransactionSchema = new Schema({
     sessionId: {
@@ -25,4 +25,4 @@ const TransactionSchema = new Schema({
     }
 });
 
-export const Transaction = mongoose.model("Transaction", TransactionSchema);
+module.exports = model("Transaction", TransactionSchema);

@@ -1,5 +1,4 @@
-import mongoose from "mongoose";
-
+const {Schema, model} = require('mongoose');
 
 const SessionSchema = new Schema({
     planSnapshot: {
@@ -48,4 +47,4 @@ const SessionSchema = new Schema({
     }
 }, { timestamps: true });
 
-export const Session = mongoose.model("Session", SessionSchema);
+module.exports = model("Session", SessionSchema);

@@ -1,4 +1,4 @@
-import { Schema } from "mongoose";
+const { Schema, model } = require('mongoose');
 
 const ItemSchema = new Schema({
     name: {
@@ -9,10 +9,17 @@ const ItemSchema = new Schema({
         type: String,
         required: true
     },
-    imageUrl: String,
+    img: {
+        type: String,
+        default: 'default.png'
+    },
     active: {
         type: Boolean,
         default: true
+    },
+    stock: {
+        type: Number,
+        default: 1
     },
     weight: {
         type: Number,
@@ -20,4 +27,4 @@ const ItemSchema = new Schema({
     },
 }, { timestamps: true });
 
-export const Item = mongoose.model("Item", ItemSchema);
+module.exports = model("Item", ItemSchema);
