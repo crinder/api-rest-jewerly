@@ -19,13 +19,12 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
-//convertir los datos del body en un objeto js
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(cors({
-  origin: 'http://localhost:5173', // Tu puerto de React (Vite)
+  origin: 'http://localhost:5173',
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
@@ -34,11 +33,14 @@ app.use(cors({
 const planOptionsRouter = require('./routes/PlanOptions');
 const itemsRouter = require('./routes/Items');
 const sesionRouter = require('./routes/sesions');
-
+const transactionRouter = require('./routes/transactions');
+const userRouter = require('./routes/User');
 
 app.use('/api/plan-options', planOptionsRouter);
 app.use('/api/items', itemsRouter);
 app.use('/api/sesions', sesionRouter);
+app.use('/api/transactions', transactionRouter);
+app.use('/api/users', userRouter);
 
 app.listen(port, () => {
   console.log("servidor corriendo en el puerto");
