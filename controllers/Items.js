@@ -32,22 +32,36 @@ const add = async (req, res) => {
 }
 
 const update = async (req, res) => {
-    const id = req.params.id;
 
-    await Item.findByIdAndUpdate(id, req.body, { new: true })
-        .then(itemUpdated => {
-            return res.status(200).send({
-                status: "success",
-                message: "Item actualizado",
-                item: itemUpdated
-            });
-        }).catch(error => {
-            return res.status(400).send({
-                status: "error",
-                message: "Error actualizando item",
-                error: error.message
-            });
+    const data = req.body;
+    const items = JSON.parse(data.itemsData);
+
+
+    if (!items) {
+        return res.status(400).send({
+            status: "error",
+            message: "Datos incompletos"
         });
+    }
+
+    const promesasDeActualizacion = items.map((item) => {
+
+        return Item.findByIdAndUpdate(
+            { _id: item.id },
+            { name: item.name, category: item.category },
+            { new: true }
+        );
+    });
+
+    const resultados = await Promise.all(promesasDeActualizacion);
+
+    res.status(200).send({
+        status: "success",
+        message: "Item actualizado",
+        item: resultados
+    });
+
+
 }
 
 const deleteItem = async (req, res) => {
@@ -163,7 +177,7 @@ const image = async (req, res) => {
     console.log(filePath);
 
     if (!fs.existsSync(filePath)) {
-        return res.status(404).end(); 
+        return res.status(404).end();
     }
 
     return res.sendFile(filePath);

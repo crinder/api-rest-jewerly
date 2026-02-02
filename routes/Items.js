@@ -26,7 +26,7 @@ router.get('/prueba', itemController.prueba);
 router.post('/add', itemController.add);
 router.get('/list', itemController.findAll);
 router.get('/item/:id', itemController.itemId);
-router.post('/update/:id', itemController.update);    
+router.post('/update', upload.none(),itemController.update);    
 router.post('/delete/:id', itemController.deleteItem);
 router.post('/upload', upload.array('images', 20), itemController.upload);
 router.get('/getAll', itemController.getAll);

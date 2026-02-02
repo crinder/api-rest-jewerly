@@ -15,7 +15,7 @@ const SessionSchema = new Schema({
     },
     status: {
         type: String,
-        enum: ["active", "finished", "cancelled"],
+        enum: ["active", "finished", "cancelled", "initial"],
         default: "active"
     },
     turnsUsed: {

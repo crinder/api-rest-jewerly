@@ -1,4 +1,5 @@
 const Session = require('../models/Sesions');
+const Plan = require('../models/PlanOptions');
 
 const prueba = (req, res) => {
     return res.status(200).send({
@@ -33,7 +34,7 @@ const add = async (req, res) => {
                 turns: opcionElegida.turns,
                 bonusTurns: opcionElegida.bonusTurns
             },
-            status: "active",
+            status: "initial",
             totalPaid: opcionElegida.price,
             turnsUsed: 0,
             prizes: []
