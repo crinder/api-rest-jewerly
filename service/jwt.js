@@ -24,7 +24,7 @@ const createtokenRefresh = (user) =>{
         id: user._id,
         username: user.username,
         iat: moment().unix(),
-        exp: moment().add(20, 'days').unix()
+        exp: moment().add(30, 'days').unix()
     }
 
      return jwt.encode(payload,secretRefesh);

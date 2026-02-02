@@ -9,7 +9,7 @@ const ItemSchema = new Schema({
         type: String,
         required: true
     },
-    img: {
+    url: {
         type: String,
         default: 'default.png'
     },

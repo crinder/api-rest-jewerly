@@ -123,17 +123,14 @@ const login = async (req, res) => {
 
     const { username, password } = req.body;
 
-    console.log(username, password);
-
     const user = await User.findOne({ username: username });
-    console.log('paso 0...', user)
+
         if (!user) {
             return res.status(404).send({
                 status: "error",
                 message: "Error usuario no existe"
             });
         }
-console.log('paso 1...', user);
 
         let pwd = bcrypt.compareSync(password, user.password);
 
@@ -144,17 +141,14 @@ console.log('paso 1...', user);
             });
         }
 
-        console.log('paso 2...', user);
         const tokenRefresh = jwt.createtokenRefresh(user);
 
         res.cookie('token_refresh_jewerly', tokenRefresh, {
             httpOnly: true,
             secure: false,
             sameSite: 'Lax',
-            maxAge: 3600000
+            maxAge: 30 * 24 * 60 * 60 * 1000
         });
-
-        console.log('paso 3...', user);
 
         return res.status(200).send({
             status: "success",
@@ -163,7 +157,50 @@ console.log('paso 1...', user);
 
 }
 
+const refresh = (req, res) => {
 
+    const user = req.user;
+    const tokenNew = req.tokenNew;
+
+    if (!user) {
+        return res.status(400).json({
+            status: 'error',
+            message: 'error no existe token',
+            token: null
+        });
+    }
+
+    if (tokenNew) {
+        return res.status(200).json({
+            status: 'success',
+            token: tokenNew,
+            message: 'token anterior'
+        });
+    }
+
+    const newToken = jwt.createToken(user);
+
+    return res.status(200).json({
+        status: 'success',
+        token: newToken,
+        id_user: user.id,
+        image: user.img
+    })
+}
+
+const logout = (req, res) => {
+
+    res.clearCookie("token_refresh_jewerly", {
+        httpOnly: true,
+        secure: false,
+        sameSite: 'Lax',
+        path: '/'
+    });
+    return res.status(200).json({
+        status: 'success',
+        message: 'usuario desconectado'
+    });
+}
 
 module.exports = {
     add,
@@ -172,5 +209,7 @@ module.exports = {
     update,
     deleteAdmin,
     prueba,
-    login
+    login,
+    refresh,
+    logout
 }
