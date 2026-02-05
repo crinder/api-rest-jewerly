@@ -32,8 +32,13 @@ const add = async (req, res) => {
 
 const update = async (req, res) => {
     const id = req.params.id;
+    const data = req.body;
 
-   await PlanOption.findByIdAndUpdate(id, req.body, { new: true })
+    console.log(id);
+    console.log(data);
+
+
+   await PlanOption.findByIdAndUpdate(id, data, { new: true })
         .then(planOptionUpdated => {
             return res.status(200).send({
                 status: "success",

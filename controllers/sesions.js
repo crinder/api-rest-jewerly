@@ -1,5 +1,6 @@
 const Session = require('../models/Sesions');
 const Plan = require('../models/PlanOptions');
+const Item = require('../models/Items');
 
 const prueba = (req, res) => {
     return res.status(200).send({
@@ -59,10 +60,10 @@ const add = async (req, res) => {
 
 const turnPlay = async (req, res) => {
     try {
-        const { sessionId } = req.params;
+        const { sesionId } = req.params;
 
-        const session = await Session.findById(sessionId);
-        if (!session || session.status !== "active") {
+        const session = await Session.findById(sesionId);
+        if (!session) {
             return res.status(400).send({ message: "Sesión no encontrada o finalizada" });
         }
 

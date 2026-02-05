@@ -9,6 +9,6 @@ router.get('/list', sesionController.findAll);
 router.get('/sesion/:id', sesionController.sesionId);
 router.post('/update/:id', sesionController.update);    
 router.post('/delete/:id', sesionController.deleteSesion);
-router.post('/turn/:id', sesionController.turnPlay);    
+router.post('/turn/:sesionId', sesionController.turnPlay);
 
 module.exports = router;    
