@@ -84,7 +84,6 @@ const turnPlay = async (req, res) => {
             return res.status(400).send({ message: "No hay premios disponibles en stock físico" });
         }
 
-
         const totalWeight = itemsConStock.reduce((sum, el) => sum + el.chance, 0);
         let random = Math.random() * totalWeight;
         let selectedEntry = null;
@@ -121,7 +120,8 @@ const turnPlay = async (req, res) => {
         return res.status(200).send({
             status: "success",
             item: itemGanado,
-            remainingTurns: totalMaxTurns - session.turnsUsed
+            remainingTurns: totalMaxTurns - session.turnsUsed,
+            turnsUsed: session.turnsUsed
         });
 
     } catch (error) {

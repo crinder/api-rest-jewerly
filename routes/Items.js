@@ -29,7 +29,7 @@ router.get('/item/:id', itemController.itemId);
 router.post('/update', upload.none(),itemController.update);    
 router.post('/delete/:id', itemController.deleteItem);
 router.post('/upload', upload.array('images', 20), itemController.upload);
-router.get('/getAll', itemController.getAll);
+router.post('/getAll', itemController.getAll);
 router.get('/image/:img', itemController.image);
 
 module.exports = router;    

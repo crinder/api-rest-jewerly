@@ -1,4 +1,5 @@
 const Item = require('../models/Items');
+const Plan = require('../models/PlanOptions');
 const fs = require('fs');
 const path = require('path');
 
@@ -98,6 +99,7 @@ const findAll = async (req, res) => {
         });
 }
 
+
 const itemId = async (req, res) => {
 
     const itemId = req.params.id;
@@ -161,13 +163,49 @@ const upload = async (req, res) => {
 
 const getAll = async (req, res) => {
 
-    const items = await Item.find();
+    const body = req.body;
+
+    const items = await Item.find().lean(); // .lean() para que sean objetos JS manipulables;
+
+    if (items && items.length > 0) {
+
+        if (!body.planId) {
+            return res.status(400).send({
+                status: "success",
+                message: "listado completado",
+                items: items
+            });
+        }
+
+        const itemsPlan = await Plan.findById(body.planId);
+
+        const newPlan = itemsPlan.availableItems.map(item => item.item._id.toString());
+
+        newItems = items.map(item => {
+
+            const itemPlan = itemsPlan.availableItems.find(i => i.item._id.toString() === item._id.toString());
+
+            return {
+                ...item,
+                exists: newPlan.includes(item._id.toString()),
+                chance: itemPlan ? itemPlan.chance : null
+            };
+        });
+
+        return res.status(200).send({
+            status: "success",
+            message: "listado completado",
+            items: newItems
+        });
+    }
 
     return res.status(200).send({
         status: "success",
         message: "listado completado",
-        items: items
+        items: []
     });
+
+
 }
 
 const image = async (req, res) => {

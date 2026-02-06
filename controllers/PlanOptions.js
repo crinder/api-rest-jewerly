@@ -34,9 +34,6 @@ const update = async (req, res) => {
     const id = req.params.id;
     const data = req.body;
 
-    console.log(id);
-    console.log(data);
-
 
    await PlanOption.findByIdAndUpdate(id, data, { new: true })
         .then(planOptionUpdated => {
@@ -91,8 +88,8 @@ const findAll = async (req, res) => {
 const planId = async (req, res) => {
 
     const planId = req.params.id;
-
-    await PlanOption.findById(planId)
+    
+    await PlanOption.findById(planId).populate('availableItems.item')
         .then(planOption => {
             if (!planOption) {
                 return res.status(404).send({
