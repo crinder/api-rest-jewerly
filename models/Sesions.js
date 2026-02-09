@@ -44,7 +44,11 @@ const SessionSchema = new Schema({
     },
     finishedAt: {
         type: Date
-    }
+    },
+    step: {
+        type: Number,
+        default: 1
+    },
 }, { timestamps: true });
 
 module.exports = model("Session", SessionSchema);
