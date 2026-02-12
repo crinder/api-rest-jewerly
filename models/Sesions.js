@@ -13,6 +13,10 @@ const SessionSchema = new Schema({
         turns: Number,
         bonusTurns: Number
     },
+    name: {
+        type: String,
+        required: true
+    },
     status: {
         type: String,
         enum: ["active", "finished", "cancelled", "initial"],

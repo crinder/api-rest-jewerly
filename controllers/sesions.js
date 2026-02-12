@@ -11,7 +11,7 @@ const prueba = (req, res) => {
 
 const add = async (req, res) => {
     try {
-        const { planId, optionId } = req.body;
+        const { planId, optionId,name } = req.body;
 
         const planOriginal = await Plan.findById(planId);
 
@@ -38,7 +38,8 @@ const add = async (req, res) => {
             status: "initial",
             totalPaid: opcionElegida.price,
             turnsUsed: 0,
-            prizes: []
+            prizes: [],
+            name: name
         });
 
         const sesionSaved = await newSession.save();
@@ -61,6 +62,7 @@ const add = async (req, res) => {
 const turnPlay = async (req, res) => {
     try {
         const { sesionId } = req.params;
+        let nturnos = false;
 
         const session = await Session.findById(sesionId);
         if (!session) {
@@ -73,6 +75,8 @@ const turnPlay = async (req, res) => {
         if (session.turnsUsed >= totalMaxTurns) {
             return res.status(400).send({ message: "No quedan turnos disponibles" });
         }
+
+        
 
         // valido los chance 
         const plan = await Plan.findById(session.planSnapshot.planId).populate('availableItems.item');
@@ -101,11 +105,15 @@ const turnPlay = async (req, res) => {
 
         session.turnsUsed += 1;
 
+        if(session.turnsUsed === totalMaxTurns){
+            nturnos = true;
+        }
+
         session.prizes.push({
             itemId: itemGanado._id,
             name: itemGanado.name,
             category: itemGanado.category,
-            imageUrl: itemGanado.imageUrl
+            imageUrl: itemGanado.url
         });
 
         if (session.turnsUsed === totalMaxTurns) {
@@ -121,7 +129,8 @@ const turnPlay = async (req, res) => {
             status: "success",
             item: itemGanado,
             remainingTurns: totalMaxTurns - session.turnsUsed,
-            turnsUsed: session.turnsUsed
+            turnsUsed: session.turnsUsed,
+            nturnos
         });
 
     } catch (error) {
@@ -167,12 +176,34 @@ const deleteSesion = async (req, res) => {
 
 const findAll = async (req, res) => {
 
+    const params = req.body;
+
+    let page;
+    let limit;
+    let skip = 0;
+
+    if (params.first && params.rows) {
+        page = parseInt(params.first, 10) ||  0;
+        limit = parseInt(params.rows, 10) || 10;
+        skip = (query.page - 1) * query.limit;
+    }
+
+
+
     await Session.find()
-        .then(sesions => {
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .populate('planSnapshot.planId').populate('prizes')
+        .then( async sesions => {
+
+            const total = await Session.countDocuments();
+
             return res.status(200).send({
                 status: "success",
                 message: "Sesiones encontradas",
-                sesions: sesions
+                sesions: sesions,
+                totalSessions: total
             });
         }).catch(error => {
             return res.status(400).send({
