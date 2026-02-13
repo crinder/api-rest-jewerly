@@ -68,7 +68,7 @@ const update = async (req, res) => {
 const deleteItem = async (req, res) => {
     const id = req.params.id;
 
-    await Item.findByIdAndDelete({ _id: id })
+    await Item.findByIdAndUpdate({ _id: id }, {active: 'ELI'})
         .then(itemDelete => {
             return res.status(200).send({
                 status: "success",
@@ -84,7 +84,7 @@ const deleteItem = async (req, res) => {
 
 const findAll = async (req, res) => {
 
-    await Item.find()
+    await Item.find({ active: 'ACT' })
         .then(items => {
             return res.status(200).send({
                 status: "success",
@@ -165,12 +165,22 @@ const getAll = async (req, res) => {
 
     const body = req.body;
 
-    const items = await Item.find().lean(); // .lean() para que sean objetos JS manipulables;
+    let page;
+    let limit;
+    let skip = 0;
+
+    if (body.first && body.rows) {
+        page = parseInt(body.first, 30) || 0;
+        limit = parseInt(body.rows, 30) || 30;
+        skip = (query.page - 1) * query.limit;
+    }
+
+    const items = await Item.find().lean().skip(skip).limit(limit); // .lean() para que sean objetos JS manipulables;
 
     if (items && items.length > 0) {
 
         if (!body.planId) {
-            return res.status(400).send({
+            return res.status(200).send({
                 status: "success",
                 message: "listado completado",
                 items: items

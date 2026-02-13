@@ -10,5 +10,6 @@ router.get('/sesion/:id', sesionController.sesionId);
 router.post('/update/:id', sesionController.update);    
 router.post('/delete/:id', sesionController.deleteSesion);
 router.post('/turn/:sesionId', sesionController.turnPlay);
+router.get('/cancel/:id', sesionController.cancel);
 
 module.exports = router;    

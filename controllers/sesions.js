@@ -11,7 +11,7 @@ const prueba = (req, res) => {
 
 const add = async (req, res) => {
     try {
-        const { planId, optionId,name } = req.body;
+        const { planId, optionId, name } = req.body;
 
         const planOriginal = await Plan.findById(planId);
 
@@ -76,7 +76,7 @@ const turnPlay = async (req, res) => {
             return res.status(400).send({ message: "No quedan turnos disponibles" });
         }
 
-        
+
 
         // valido los chance 
         const plan = await Plan.findById(session.planSnapshot.planId).populate('availableItems.item');
@@ -105,7 +105,7 @@ const turnPlay = async (req, res) => {
 
         session.turnsUsed += 1;
 
-        if(session.turnsUsed === totalMaxTurns){
+        if (session.turnsUsed === totalMaxTurns) {
             nturnos = true;
         }
 
@@ -178,24 +178,24 @@ const findAll = async (req, res) => {
 
     const params = req.body;
 
+    console.log('params...', params);
+
     let page;
     let limit;
     let skip = 0;
 
     if (params.first && params.rows) {
-        page = parseInt(params.first, 10) ||  0;
+        page = parseInt(params.first, 10) || 0;
         limit = parseInt(params.rows, 10) || 10;
         skip = (query.page - 1) * query.limit;
     }
-
-
 
     await Session.find()
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit)
         .populate('planSnapshot.planId').populate('prizes')
-        .then( async sesions => {
+        .then(async sesions => {
 
             const total = await Session.countDocuments();
 
@@ -238,6 +238,44 @@ const sesionId = async (req, res) => {
         });
 }
 
+const cancel = async (req, res) => {
+
+    const id = req.params.id;
+
+    const sesion = await Session.findById(id);
+
+    if (!sesion) {
+        return res.status(404).send({
+            status: "error",
+            message: "Error sesion no existe"
+        });
+    }
+
+    sesion.status = 'cancelled';
+
+    const promesasDeActualizacion = sesion.prizes.map((item) => {
+
+        console.log(item);
+
+        return Item.findByIdAndUpdate(
+            { _id: item.itemId },
+            { $inc: { stock: +1 } }
+        );
+        
+    });
+
+    const resultados = await Promise.all(promesasDeActualizacion);
+
+    await sesion.save();
+
+    return res.status(200).send({
+        status: "success",
+        message: "Sesion cancelada",
+        sesion: sesion
+    });
+
+}
+
 module.exports = {
     add,
     findAll,
@@ -245,5 +283,6 @@ module.exports = {
     update,
     deleteSesion,
     prueba,
-    turnPlay
+    turnPlay,
+    cancel
 }

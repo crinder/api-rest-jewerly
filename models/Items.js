@@ -14,8 +14,8 @@ const ItemSchema = new Schema({
         default: 'default.png'
     },
     active: {
-        type: Boolean,
-        default: true
+        type: String,
+        default: 'ACT'
     },
     stock: {
         type: Number,
