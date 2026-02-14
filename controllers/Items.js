@@ -2,6 +2,7 @@ const Item = require('../models/Items');
 const Plan = require('../models/PlanOptions');
 const fs = require('fs');
 const path = require('path');
+const sharp = require('sharp');
 
 const prueba = (req, res) => {
     return res.status(200).send({
@@ -68,7 +69,7 @@ const update = async (req, res) => {
 const deleteItem = async (req, res) => {
     const id = req.params.id;
 
-    await Item.findByIdAndUpdate({ _id: id }, {active: 'ELI'})
+    await Item.findByIdAndUpdate({ _id: id }, { active: 'ELI' })
         .then(itemDelete => {
             return res.status(200).send({
                 status: "success",
@@ -136,12 +137,28 @@ const upload = async (req, res) => {
             return res.status(400).send({ message: "No se subieron imágenes" });
         }
 
-        const promesasDeGuardado = files.map((file, index) => {
+        const uPath = './uploads/items/';
+
+        if (!fs.existsSync(uPath)) {
+            fs.mkdirSync(uPath, { recursive: true });
+        }
+
+        const promesasDeGuardado = files.map(async (file, index) => {
+
+            const fileName = `item-${Date.now()}-${Math.round(Math.random() * 1E9)}.webp`;
+            const fullPath = path.join(uPath, fileName);
+
+            await sharp(file.buffer)
+                .resize(1000, 1000, { fit: 'inside', withoutEnlargement: true })
+                .webp({ quality: 80 }) 
+                .toFile(fullPath);
+
             const nuevoItem = new Item({
                 name: itemsData[index].name,
                 category: itemsData[index].category,
-                url: file.filename
+                url: fileName
             });
+
             return nuevoItem.save();
         });
 
@@ -175,7 +192,7 @@ const getAll = async (req, res) => {
         skip = (query.page - 1) * query.limit;
     }
 
-    const items = await Item.find().lean().skip(skip).limit(limit); // .lean() para que sean objetos JS manipulables;
+    const items = await Item.find({ active: 'ACT' }).lean().skip(skip).limit(limit); // .lean() para que sean objetos JS manipulables;
 
     if (items && items.length > 0) {
 

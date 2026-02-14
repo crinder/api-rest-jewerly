@@ -4,29 +4,28 @@ const itemController = require('../controllers/Items');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const sharp = require('sharp');
 
 
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, './uploads/items');
+const upload = multer({
+    storage: multer.memoryStorage(),
+    fileFilter: (req, file, cb) => {
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'];
+        if (allowedTypes.includes(file.mimetype)) {
+            cb(null, true);
+        } else {
+            cb(new Error('Tipo de archivo no permitido. Solo imágenes JPG, PNG y WebP.'), false);
+        }
     },
-    filename: (req, file, cb) => {
-        const fileExtension = path.extname(file.originalname);
-        
-        const filerename = +Date.now() + '-' + Math.round(Math.random() * 1E9);
-        
-        cb(null, `item-${filerename}${fileExtension}`);
-    }
+    limits: { fileSize: 5 * 1024 * 1024 }
 });
-
-const upload = multer({ storage: storage });
 
 
 router.get('/prueba', itemController.prueba);
 router.post('/add', itemController.add);
 router.get('/list', itemController.findAll);
 router.get('/item/:id', itemController.itemId);
-router.post('/update', upload.none(),itemController.update);    
+router.post('/update', upload.none(), itemController.update);
 router.post('/delete/:id', itemController.deleteItem);
 router.post('/upload', upload.array('images', 20), itemController.upload);
 router.post('/getAll', itemController.getAll);
